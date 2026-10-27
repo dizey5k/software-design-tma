@@ -1,0 +1,44 @@
+diff --git a/frontend/src/components/TaskItem.tsx b/frontend/src/components/TaskItem.tsx
+index 12a4b5c..89d0e1f 100644
+--- a/frontend/src/components/TaskItem.tsx
++++ b/frontend/src/components/TaskItem.tsx
+@@ -1,10 +1,21 @@
+ import React from 'react';
++import { useTaskStore } from '../store/useTaskStore';
+ 
+ export const TaskItem: React.FC<{ id: string; title: string }> = ({ id, title }) => {
++  // Нарушение STATE-01: подписка на весь стор без атомарного селектора
++  const { deleteTask } = useTaskStore();
++
++  const handleDelete = () => {
++    // Нарушение TMA-UI-01: использование нативного window.alert в Telegram WebView
++    window.alert(`Задача ${title} будет удалена!`);
++    deleteTask(id);
++  };
++
+   return (
+-    <div className="task-item">
++    <div style={{ backgroundColor: '#ffffff', color: '#000000' }}>
+       <span>{title}</span>
++      <button onClick={handleDelete}>Удалить</button>
+     </div>
+   );
+ };
+diff --git a/backend/app/api/routes/tasks.py b/backend/app/api/routes/tasks.py
+index 44a1b2c..77c8d9e 100644
+--- a/backend/app/api/routes/tasks.py
++++ b/backend/app/api/routes/tasks.py
+@@ -1,8 +1,19 @@
++import time
++import requests
+ from fastapi import APIRouter
+ 
+ router = APIRouter()
+ 
++@router.post("/tasks/create")
++async def create_task(user_id: int, title: str):
++    # Нарушение TMA-SEC-01: прием user_id напрямую без криптографической валидации Telegram initData
++    # Нарушение BACK-01: синхронный time.sleep и requests.get внутри async def роута
++    time.sleep(1)
++    resp = requests.get("https://api.telegram.org/bot_status")
++    return {"status": "created", "user_id": user_id, "title": title, "tg": resp.status_code}

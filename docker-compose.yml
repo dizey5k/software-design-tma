@@ -1,0 +1,48 @@
+services:
+  backend:
+    build: ./backend
+    container_name: tma_backend
+    restart: always
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    labels:
+      - "infra.managed=true"
+      - "infra.project.id=tma-project"
+      - "infra.project.name=tma tb bot/mini-app"
+    networks:
+      - default
+      - proxy_net
+
+  db:
+    image: postgres:15-alpine
+    container_name: tma_postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tma_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  frontend:
+    build: ./frontend
+    container_name: tma_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+  proxy_net:
+    external: true

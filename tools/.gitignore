@@ -1,0 +1,32 @@
+# --- Python ---
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env
+
+# --- Environment ---
+.env
+.env.local
+.env.development
+.env.production
+.vscode/
+.idea/
+reports/
+
+# --- Database ---
+# Если используешь локальную БД в файле или дампы
+*.sqlite3
+*.db
+dump.sql
+
+# --- Docker ---
+# Чтобы локальные контейнеры не попадали в репозиторий
+docker-compose.override.yml
+
+# --- OS ---
+.DS_Store
+Thumbs.db

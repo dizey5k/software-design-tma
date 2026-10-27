@@ -1,0 +1,5 @@
+# FROM qwen2.5-coder:7b for pc
+FROM qwen2.5-coder:3b
+PARAMETER temperature 0.05
+PARAMETER top_p 0.9
+PARAMETER num_ctx 8192

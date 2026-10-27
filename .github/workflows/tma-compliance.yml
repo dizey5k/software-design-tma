@@ -1,0 +1,57 @@
+name: TMA Compliance AI Review
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  tma-ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: 🔗 Init only tools submodule
+        run: |
+          # Подтягиваем только инструмент ревьюера с GitHub, игнорируя приватные сабмодули
+          git submodule update --init tools
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 🦙 Setup Ollama & Model
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 5
+          ollama pull qwen2.5-coder:3b
+
+      - name: 🔍 Run TMA Compliance Reviewer
+        id: review
+        continue-on-error: true
+        env:
+          OLLAMA_MODEL: "qwen2.5-coder:3b"
+          TARGET_BRANCH: "origin/${{ github.base_ref }}"
+        run: |
+          python3 tools/main.py --output-md review_comment.md
+
+      - name: 💬 Post Review Report to Pull Request
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && hashFiles('review_comment.md') != ''
+        with:
+          header: tma-compliance-report
+          path: review_comment.md
+
+      - name: 🚦 Gatekeeper Check (Block PR if Failed)
+        if: steps.review.outcome == 'failure'
+        run: |
+          echo "❌ TMA Compliance Review failed! Merge is blocked."
+          exit 1

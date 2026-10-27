@@ -1,0 +1,40 @@
+diff --git a/frontend/src/components/TaskItem.tsx b/frontend/src/components/TaskItem.tsx
+index 12a4b5c..55f6a1b 100644
+--- a/frontend/src/components/TaskItem.tsx
++++ b/frontend/src/components/TaskItem.tsx
+@@ -1,10 +1,20 @@
+ import React from 'react';
++import { useTaskStore } from '../store/useTaskStore';
+ 
+ export const TaskItem: React.FC<{ id: string; title: string }> = ({ id, title }) => {
++  const deleteTask = useTaskStore((state) => state.deleteTask);
++
++  const handleDelete = () => {
++    window.Telegram.WebApp.showAlert(`Задача ${title} удалена!`);
++    deleteTask(id);
++  };
++
+   return (
+     <div style={{ backgroundColor: 'var(--tg-theme-bg-color)', color: 'var(--tg-theme-text-color)' }}>
+       <span>{title}</span>
++      <button onClick={handleDelete}>Удалить</button>
+     </div>
+   );
+ };
+diff --git a/backend/app/api/routes/tasks.py b/backend/app/api/routes/tasks.py
+index 44a1b2c..99a1b3d 100644
+--- a/backend/app/api/routes/tasks.py
++++ b/backend/app/api/routes/tasks.py
+@@ -1,6 +1,12 @@
+-from fastapi import APIRouter
++from fastapi import APIRouter, Depends
++from app.core.security import verify_telegram_init_data, TelegramUser
+ 
+ router = APIRouter()
+ 
++@router.post("/tasks/create")
++async def create_task(
++    title: str,
++    tg_user: TelegramUser = Depends(verify_telegram_init_data)
++):
++    return {"status": "created", "user_id": tg_user.id, "title": title}

@@ -1,0 +1,37 @@
+# 🚀 TMA Task Manager — AI-Powered Task Management Ecosystem
+
+Комплексная система управления задачами в формате **Telegram Mini App (TMA)** с интеллектуальным NLP-парсингом поручений на базе **Google Gemini**, диалоговым Telegram-ботом и двусторонней синхронизацией с **Google Calendar API**.
+
+Репозиторий является корневым монорепозиторием (Git Submodules), объединяющим клиентское приложение, серверное ядро, аналитическую документацию и инструменты автоматизированного AI-комплаенса кода.
+
+---
+
+## 📂 Структура проекта (Submodules & Directories)
+
+* 📁 **[`backend`](./backend)** — Асинхронный REST API сервер (FastAPI, SQLAlchemy 2.0, PostgreSQL, Alembic), Telegram-бот (`aiogram`), модуль интеграции с Gemini API и сервис Google Calendar OAuth2.
+* 📁 **[`frontend`](./frontend)** — Клиентское веб-приложение Telegram Mini App (React 18, TypeScript, SCSS Modules, Axios, Custom Hooks, i18n RU/EN, Nginx).
+* 📁 **[`analytics`](./analytics)** — Системная аналитика, архитектура, спецификации требований и диаграммы проектирования (КПО).
+* 📁 **[`tools`](./tools)** — Система автоматизированного AI Code Review (Gemini + детерминированные Guardrails) для CI/CD пайплайнов и клиентских Git-хуков (`pre-push`).
+
+---
+
+## 👥 Команда проекта и распределение ответственности
+
+| Участник | Роль | Основная зона ответственности |
+| :--- | :--- | :--- |
+| **Федоров Олег (@dizey5k)** | **Team Lead / Architect** | Системная архитектура, валидация Telegram `initData` (HMAC-SHA256), Docker Compose, OneDev CI/CD и сборка приложений |
+| **Филонова Ангелина (filon6)** | **Backend / State Dev** | Проектирование схемы БД PostgreSQL, миграции Alembic, CRUD REST API задач и хук `useTasks` |
+| **Шак Виталина (vitsh1)** | **AI & Bot Engineer** | Промпт-инжиниринг, интеграция Gemini API, логика Telegram-бота и UI витрины задач (`TaskList`, `TaskCard`) |
+| **Пилюгина Маргарита (MargotBush)** | **Integrations & UI-Kit** | Двусторонняя синхронизация Google Calendar OAuth2, переиспользуемый UI-Kit (`DatePicker`, `Modal`) и локализация (i18n) |
+
+## 🛠 Быстрый запуск всего комплекса
+
+Клонирование проекта вместе со всеми зависимыми модулями:
+```bash
+git clone --recurse-submodules
+cd software-design-tma
+Запуск всех сервисов в единой сети Docker:
+
+Bash
+docker compose up -d --build
+```

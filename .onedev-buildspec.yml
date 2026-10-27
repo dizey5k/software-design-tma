@@ -1,0 +1,36 @@
+version: 53
+jobs:
+- name: TMA AI Compliance Check
+  steps:
+  - type: CheckoutStep
+    name: Checkout
+    cloneCredential:
+      type: DefaultCredential
+    withLfs: false
+    withSubmodules: true
+    condition: SUCCESSFUL
+    optional: false
+  - type: CommandStep
+    name: Run AI Reviewer
+    runInContainer: true
+    image: python:3.11-slim
+    interpreter:
+      type: PosixInterpreter
+      shell: sh
+      commands: |
+        python -m venv venv
+        ./venv/bin/python -m pip install --upgrade pip
+        python tools/main.py --target origin/main --output-md onedev_report.md
+    runAs: 0:0
+    useTTY: true
+    condition: SUCCESSFUL
+    optional: false
+  triggers:
+  - type: PullRequestUpdateTrigger
+    branches: main
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  includeUpstreamWhenRebuild: false
+  includeDownstreamWhenRebuild: false
+  timeout: 14400

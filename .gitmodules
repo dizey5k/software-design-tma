@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/dizey5k/software-deisgn-tma-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/dizey5k/software-design-tma-frontend.git
