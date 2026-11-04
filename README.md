@@ -9,7 +9,7 @@
 ## 📂 Структура проекта (Submodules & Directories)
 
 * 📁 **[`backend`](./backend)** — Асинхронный REST API сервер (FastAPI, SQLAlchemy 2.0, PostgreSQL, Alembic), Telegram-бот (`aiogram`), модуль интеграции с Gemini API и сервис Google Calendar OAuth2.
-* 📁 **[`frontend`](./frontend)** — Клиентское веб-приложение Telegram Mini App (React 18, TypeScript, SCSS Modules, Axios, Custom Hooks, i18n RU/EN, Nginx).
+* 📁 **[`frontend`](./frontend)** — Клиентское веб-приложение Telegram Mini App (SolidJS, TypeScript, SCSS Modules, Axios, Nginx).
 * 📁 **[`analytics`](./analytics)** — Системная аналитика, архитектура, спецификации требований и диаграммы проектирования (КПО).
 * 📁 **[`tools`](./tools)** — Система автоматизированного AI Code Review (Gemini + детерминированные Guardrails) для CI/CD пайплайнов и клиентских Git-хуков (`pre-push`).
 
@@ -24,14 +24,21 @@
 | **Шак Виталина (vitsh1)** | **AI & Bot Engineer** | Промпт-инжиниринг, интеграция Gemini API, логика Telegram-бота и UI витрины задач (`TaskList`, `TaskCard`) |
 | **Пилюгина Маргарита (MargotBush)** | **Integrations & UI-Kit** | Двусторонняя синхронизация Google Calendar OAuth2, переиспользуемый UI-Kit (`DatePicker`, `Modal`) и локализация (i18n) |
 
+## ✨ Возможности
+
+* Создание задач вручную или из текста/голосового сообщения с помощью Gemini.
+* Совместная задача для всей группы создаётся командой `/task текст задачи`; каждая карточка общая, а статус и изменения видны всем участникам, выполнившим `/join` в этой группе.
+* Личную задачу конкретному исполнителю создаёт `/task @username текст задачи`. Адресат должен заранее открыть бота командой `/start`; для получения команд в группе у бота отключите Privacy Mode в BotFather или обращайтесь к нему как `/task@имя_бота ...`.
+* Месячная аналитика: выполнение в срок, просроченные задачи, распределение по категориям и личный/групповой burndown.
+* При недоступности Gemini API пользователю показывается понятное сообщение; сервис использует ограниченный локальный TTL-кэш и circuit breaker.
+
+Фронтенд сейчас реализован на SolidJS (не React/Zustand, как указано в исходных требованиях). Кэш и состояние circuit breaker локальны для процесса backend и не заменяют распределённый кэш для горизонтального production-масштабирования.
+
 ## 🛠 Быстрый запуск всего комплекса
 
 Клонирование проекта вместе со всеми зависимыми модулями:
 ```bash
 git clone --recurse-submodules
 cd software-design-tma
-Запуск всех сервисов в единой сети Docker:
-
-Bash
 docker compose up -d --build
 ```
