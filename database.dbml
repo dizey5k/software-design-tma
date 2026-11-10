@@ -1,0 +1,55 @@
+Project tma_task_manager {
+  database_type: 'PostgreSQL'
+  Note: 'Schema mirrors backend SQLAlchemy models and Alembic migrations through c134a8e7d29f. Defaults on users and tasks are applied by SQLAlchemy, not necessarily by PostgreSQL.'
+}
+
+Table users {
+  id uuid [pk, not null]
+  telegram_id bigint [not null, unique]
+  username varchar(255)
+  timezone_name varchar(64) [not null, default: 'Europe/Moscow']
+  created_at timestamptz
+
+  google_access_token varchar
+  google_refresh_token varchar
+  google_token_expiry timestamp
+}
+
+Table tasks {
+  id uuid [pk, not null]
+  user_id uuid [not null]
+  calendar_event_id varchar
+
+  title varchar(255) [not null]
+  description text
+  deadline timestamptz
+  priority varchar(50) [default: 'MEDIUM']
+  category varchar(50) [default: 'WORK']
+  status varchar(50) [default: 'TODO']
+
+  source_msg_id bigint
+  source_chat_id bigint
+  is_shared boolean [not null, default: false]
+
+  created_at timestamptz
+  completed_at timestamptz
+  reminder_sent boolean
+
+  Note: 'Shared tasks have is_shared=true and source_chat_id set to the Telegram group ID. Access is limited in the API to users in group_memberships.'
+}
+
+Table group_memberships {
+  user_id uuid [not null]
+  chat_id bigint [not null]
+  chat_title varchar(255)
+  joined_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, chat_id) [pk]
+  }
+
+  Note: 'One row means the user joined shared tasks for this Telegram chat. chat_title is refreshed by /join.'
+}
+
+Ref: tasks.user_id > users.id
+Ref: group_memberships.user_id > users.id [delete: cascade]
